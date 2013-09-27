@@ -1,4 +1,5 @@
 sendsms-scripts
 ===============
 
-Send SMS from the command line using ShellMS 
+Perl scripts which facilitate sending SMS from the command line using ShellMS, by querying the contacts and SMS databases of the phone.
+
