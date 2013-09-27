@@ -8,6 +8,7 @@ Perl scripts which facilitate sending SMS via an Android phone from the command 
  * Sends SMS using [ShellMS] bridge [1]
 
 Usage:
+
     perl write-sms.pl
 
 ![Screenshot](./pic/screen1.png "Recent SMS displayed")
