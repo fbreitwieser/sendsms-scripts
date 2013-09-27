@@ -22,8 +22,7 @@ perl, ShellMS, adb
 
 Changelog:
 
-v1.0 (20130928)
- * first release
+v1.0 (20130928): first release
 
 License: GPLv2
 
