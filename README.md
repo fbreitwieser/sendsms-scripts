@@ -5,7 +5,7 @@ Perl scripts which facilitate sending SMS via an Android phone from the command 
 
  * Queries contact database to autocomplete names (press tab to auto-complete)
  * Queries SMS database to display recent conversations
- * Sends SMS using [ShellMS] bridge [1]
+ * Sends SMS using [ShellMS] [1] adb application
 
 Usage:
 
