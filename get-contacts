@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SQLCMD='select count(*),number,name from calls group by number,name'
+#SQLCMD='SELECT name, number FROM view_v1_phones'
+
+adb shell su -c "sqlite3 -header -list -separator ' :: ' /data/data/com.android.providers.contacts/databases/contacts2.db '$SQLCMD'" | sort -n

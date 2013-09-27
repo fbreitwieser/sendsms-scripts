@@ -1,0 +1,15 @@
+#! /bin/bash
+# Send text through adb by Madura A.
+# https://market.android.com/details?id=org.jraf.android.nolock
+# Please use the above app(or similar) to keep it from locking while
+# using this script
+
+# FIX: Android 4.1.1 suggested by samox86
+PATH=$PATH:/system/xbin:/system/bin
+
+ADB=/opt/android-sdk/platform-tools/adb
+$ADB shell am start -a android.intent.action.SENDTO -d sms:$1 --es sms_body "$2" --ez exit_on_sent true
+sleep 1
+$ADB shell input keyevent 22
+sleep 1
+$ADB shell input keyevent 66

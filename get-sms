@@ -1,0 +1,5 @@
+#!/bin/sh
+
+SQLCMD="select address,replace(body,x'0A', ' '),type,read from sms order by _id desc limit 20"
+
+adb shell su -c "sqlite3 -header -list -separator ' :: ' /data/data/com.android.providers.telephony/databases/mmssms.db \\\"$SQLCMD\\\""
