@@ -14,7 +14,7 @@ Usage:
 
 ![Screenshot](./pic/screen2.png "Searching for contact")
 
-![Screenshot](./pic/screen2.png "Writing SMS")
+![Screenshot](./pic/screen3.png "Writing SMS")
 
 Requirements:
 perl, ShellMS, adb
