@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 # Creation date : 2013-01-28
-# Purpose       : 
 
 use Term::ANSIColor;
 use Data::Dumper;

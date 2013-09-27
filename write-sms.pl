@@ -1,12 +1,11 @@
 #!/usr/bin/perl
 # Creation date : 2013-01-28
-# Last modified : Mon Jan 28 19:39:48 2013
 
 # Module        : write-sms.pl
-# Purpose       : 
-# Usage         : 
-# Licence       : Copyright (c) 2010 Florian Breitwieser, Ce-M-M-
-# Contact       : Florian Breitwieser <fbreitwieser@cemm.oeaw.ac.at>
+# Purpose       : Write SMS from console to Android phone
+# Usage         : perl write-sms.pl
+# Licence       : GPL v2
+# Contact       : Florian Breitwieser <florian.bw@gmail.com>
 
 use strict;
 use warnings;
