@@ -44,17 +44,17 @@ while (1) {
 
   ($name,$number) = ask_for_contact(%contact_to_number) unless defined $number;
   
+  last if (!defined $name || $name eq "");
+
   show_recent_messages($name,$number,@sms);
   $txt = send_sms_to_number($number,$txt);
 
-  print "\n Send another SMS? [yNse] (to same contact with s, same text to someone else with e) ";
+  print "\n Send another SMS? [Ynse] (to same contact with s, same text to someone else with e) ";
 
   my $answer = <>; chomp $answer if defined $answer;
-  if (defined $answer) {
-    if (uc($answer) eq 'Y') {
-      undef $txt;
-      undef $number;
-      next;
+  last if !defined $answer;
+    if (uc($answer) eq 'N') {
+      last;
     } elsif (uc($answer) eq 'S') {
       undef $txt;
       next;
@@ -62,8 +62,10 @@ while (1) {
       undef $number;
       next;
     }
-  }
-  exit;
+  
+  undef $txt;
+  undef $number;
+  next;
 }
 
 sub ask_for_contact {
@@ -87,13 +89,14 @@ sub show_recent_messages {
 sub send_sms_to_number {
   my ($number,$txt) = @_;
   if (!defined $txt || length($txt) == 0) {
-    print "\n\n  Text: ";
+    print "\n\n  Enter text: ";
     $txt = <>;
     chomp $txt if defined $txt;
   }
-  print "\n Send \"$txt\" to number $number? [yN] ";
+  return if !defined $txt || length($txt) == 0;
+  print "\n Send \"$txt\" to number $number? [Yn] ";
   my $answer = <>; chomp $answer if defined $answer;
-  if (defined $answer && uc($answer) eq 'Y') {
+  if (defined $answer && (uc($answer) eq 'Y' || $answer eq "")) {
     send_sms_using_shellms($number,$txt) unless !defined $txt || $txt =~ /^\s*$/;
   }
   return $txt;
