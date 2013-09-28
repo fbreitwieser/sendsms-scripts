@@ -12,12 +12,12 @@ The only scripts of interest are write-sms.pl and get-sms.pl, both of which can 
 Usage:
 
     perl write-sms.pl
+    
+<img src="./pic/screen1.png" alt="Recent SMS displayed" width="50%" height="50%"/>
 
-![Screenshot](./pic/screen1.png "Recent SMS displayed")
+<img src="./pic/screen2.png" alt="Searching for contact" width="35%"/>
 
-![Screenshot](./pic/screen2.png "Searching for contact")
-
-![Screenshot](./pic/screen3.png "Writing SMS")
+<img src="./pic/screen3.png" alt="Writing SMS" width="50%" height="50%"/>
 
     perl get-sms.pl
 
