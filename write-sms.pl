@@ -11,23 +11,18 @@ use strict;
 use warnings;
 use Term::Screen::Uni;
 use Complete;
-use AndroidSMS qw/get_sms print_sms/;
+use AndroidSMS;
 
 my $ADB = "adb";
 
 my $scr = new Term::Screen::Uni;
 $scr->clrscr();
+
 $scr->at(4,5)->puts(" Gathering contacts ... \n");
-my @contacts = `sh get-contacts2`; 
-my %contact_to_number;
-my %number_to_contact;
-foreach (@contacts) {
-  my @c = split(/ :: /);
-  $c[1] =~ s/ //g;
-  $c[1] =~ s/\+43/0/;
-  $contact_to_number{$c[0]} = $c[1];
-  $number_to_contact{$c[1]} = $c[0];
-}
+my @contacts = get_contacts();
+my %contact_to_number = contact_to_number(@contacts);
+my %number_to_contact = number_to_contact(@contacts);
+
 $scr->at(5,5)->puts(" Gathering SMS ... \n");
 my @sms = AndroidSMS::get_sms();
 for (my $i=0; $i<=$#sms; ++$i) {

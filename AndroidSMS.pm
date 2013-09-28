@@ -9,18 +9,53 @@ use Term::ANSIColor;
 use Data::Dumper;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(get_sms print_sms);
+our @EXPORT = qw(get_sms print_sms get_contacts contact_to_number number_to_contact);
 our $VERSION = '1';
 
 my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
 
+my $CONTACTS_DB = "/data/data/com.android.providers.contacts/databases/contacts2.db";
+my $SMS_DB = "/data/data/com.android.providers.telephony/databases/mmssms.db";
+
+sub get_contacts {
+  #my $SQLCMD='select count(*),number,name from calls group by number,name'
+  my $SQLCMD='SELECT name, number, _id FROM view_v1_phones';
+  my $adb_cmd = "adb shell su -c \"sqlite3 -header -list -separator ' :: ' $CONTACTS_DB '$SQLCMD'\"";
+  my @res = `$adb_cmd`;
+  chomp @res;
+  return @res;  
+}
+
+sub number_to_contact {
+  contact_hash(1,0,@_);
+}
+
+sub contact_to_number {
+  contact_hash(0,1,@_);
+}
+
+sub contact_hash {
+  my ($key_field,$value_field,@contacts) = @_;
+  my %contacts;
+  foreach (@contacts) {
+    my @c = split(/ :: /);
+    $c[1] =~ s/ //g;
+    $c[1] =~ s/\+43/0/;
+    $contacts{$c[$key_field]} = $c[$value_field];
+  }
+  return(%contacts);
+}
+
+
+
 sub get_sms {
   my $SQLCMD="select address,replace(body,x'0A', ' '),type,read from sms order by _id desc limit 25";
-  my $sms_cmd="adb shell su -c \"sqlite3 -header -list -separator ' :: ' /data/data/com.android.providers.telephony/databases/mmssms.db \\\\\\\"$SQLCMD\\\\\\\"\"";
+  my $sms_cmd="adb shell su -c \"sqlite3 -header -list -separator ' :: ' $SMS_DB \\\\\\\"$SQLCMD\\\\\\\"\"";
   my @res = `$sms_cmd`;
   chomp @res;
   return @res;  
 }
+
 sub print_sms1 {
   my ($contact,$sms) = @_;
   my %sms;
