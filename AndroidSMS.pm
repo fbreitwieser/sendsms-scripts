@@ -34,7 +34,7 @@ sub print_sms1 {
     $color = 'red' if ($s[3] == 0);
 
     if ($s[2] == 2) {
-      printf "  %".length($contact)."s ","[Me]";
+      printf " %".length($contact)."s ","[Me]";
       print colored $s[1]."\n",$color;
     } else {
       print " [$contact] ";
