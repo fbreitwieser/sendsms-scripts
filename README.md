@@ -7,6 +7,8 @@ Perl scripts which facilitate sending SMS via an Android phone from the command 
  * Queries SMS database to display recent conversations
  * Sends SMS using [ShellMS] [1] adb application
 
+Tested on Linux on x86_64 and armv7h (Chromebook).
+
 The only scripts of interest are write-sms.pl and get-sms.pl, both of which can be called without command line parameters.
 
 Usage:
@@ -22,7 +24,7 @@ Usage:
     perl get-sms.pl
 
 Requirements:
-perl, ShellMS, adb
+perl [Term::ReadKey,Term::Screen::Uni], ShellMS, adb
 
 Changelog:
 
