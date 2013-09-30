@@ -122,6 +122,11 @@ sub Complete {
         };
       }
     }
+
+    my @res = grep(/^.*\Q$return/, @cmp_lst);
+    if (scalar @res == 1) {
+      $return = match_it($scr,$prompt,$return,1,@cmp_lst);
+    }
   }
 
   # system $tty_restore if defined $tty_restore;
