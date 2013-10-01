@@ -39,9 +39,11 @@ sub contact_hash {
   my %contacts;
   foreach (@contacts) {
     my @c = split(/ :: /);
-    $c[1] =~ s/ //g;
-    $c[1] =~ s/\+43/0/;
-    $contacts{$c[$key_field]} = $c[$value_field];
+    if (defined $c[1]) {
+      $c[1] =~ s/ //g;
+      $c[1] =~ s/\+43/0/;
+      $contacts{$c[$key_field]} = $c[$value_field];
+    }
   }
   return(%contacts);
 }

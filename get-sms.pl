@@ -1,10 +1,8 @@
 #!/usr/bin/perl
 # Creation date : 2013-01-28
 
-use Term::ANSIColor;
-use Data::Dumper;
-use Term::ReadKey;
-use Getopt::Long;
+use FindBin qw/$Bin/;
+use lib $Bin;
 use AndroidSMS;
 
 my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
