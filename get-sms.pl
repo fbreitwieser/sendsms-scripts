@@ -5,8 +5,6 @@ use FindBin qw/$Bin/;
 use lib $Bin;
 use AndroidSMS;
 
-my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
-
 my @contacts = get_contacts();
 my %contacts = number_to_contact(@contacts);
 
