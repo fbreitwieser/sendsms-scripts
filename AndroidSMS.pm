@@ -51,7 +51,8 @@ sub contact_hash {
 
 
 sub get_sms {
-  my $SQLCMD="select address,replace(body,x'0A', ' '),type,read from sms order by _id desc limit 25";
+# my $SQLCMD="select address,replace(body,x'0A', ' '),type,read from sms order by _id desc limit 25";
+  my $SQLCMD="select address,replace(replace(body,x'0A', ' '),x'0D', ' '),type,read from sms order by _id desc limit 25";
   my $sms_cmd="adb shell su -c \"sqlite3 -header -list -separator ' :: ' $SMS_DB \\\\\\\"$SQLCMD\\\\\\\"\"";
   my @res = `$sms_cmd`;
   chomp @res;
