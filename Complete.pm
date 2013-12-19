@@ -138,7 +138,6 @@ sub Complete {
     system $tty_safe_restore;
   }
   }
-  print("\n");
   return($return);
 }
 

@@ -35,34 +35,48 @@ for (my $i=0; $i<=$#sms; ++$i) {
 $scr->at(7,5)->puts(" Recent SMS \n");
 $scr->at(8,0);
 print_sms(\%number_to_contact,\@sms);
-print "\n\n Press Enter to write SMS ... ";
-$scr->getch();
-
-my $txt = join(" ",@ARGV);
 
 my ($name,$number);
+my $txt = join(" ",@ARGV);
+my ($last_number) = split(/ :: /,$sms[1]);
+my $last_name = $number_to_contact{$last_number};
+$scr->puts("\n\n Press any key to write SMS, or Enter to write to last contact [$last_name] ... ");
+my $ret = $scr->getch();
+if ($ret eq "\r") {
+  ($name,$number) = ($last_name,$last_number);
+  $scr->clrscr();
+}
+
 
 while (1) {
 
   ($name,$number) = ask_for_contact(%contact_to_number) unless defined $number;
-  
-  last if (!defined $name || $name eq "");
+  last unless defined $number;
+  $txt = do_send_sms($name,$number,$txt);
+  $scr->puts("\n  Send another SMS? [Ynsewc]  (call contact with c, to same contact with s, same text to someone else with e). Show recent SMS with w. ");
 
-  show_recent_messages($name,$number,@sms);
-  $txt = send_sms_to_number($number,$txt);
-
-  print "\n Send another SMS? [Ynse] (to same contact with s, same text to someone else with e) ";
-
-  my $answer = <>; chomp $answer if defined $answer;
+  my $answer = $scr->getch();
   last if !defined $answer;
     if (uc($answer) eq 'N') {
       last;
+    } elsif (uc($answer) eq 'C') {
+      system("adb shell am start -a android.intent.action.CALL -d tel:$number");
     } elsif (uc($answer) eq 'S') {
       undef $txt;
       next;
     } elsif (uc($answer) eq 'E') {
       undef $number;
       next;
+    } elsif (uc($answer) eq 'W') {
+      $scr->puts(" Gathering SMS ... \n");
+      @sms = AndroidSMS::get_sms();
+      for (my $i=0; $i<=$#sms; ++$i) {
+        $sms[$i] =~ s/\+43/0/g;
+        $sms[$i] =~ s/([0-9]) ([0-9])/$1$2/g;
+      }
+      print_sms(\%number_to_contact,\@sms);
+      $scr->puts("\n\n Press any key to write SMS ... ");
+      $scr->getch();
     }
   
   undef $txt;
@@ -70,33 +84,44 @@ while (1) {
   next;
 }
 
+sub do_send_sms {
+  my ($name,$number,$txt) = @_;
+  last if (!defined $name || $name eq "");
+  $scr->puts("\n  Mobile phone number: $number\n");
+  show_recent_messages($name,$number,@sms);
+  $txt = send_sms_to_number($number,$txt);
+  return($txt);
+}
+
 sub ask_for_contact {
   my (%contact_to_number) = @_;
-  my $input = Complete("Enter contact name",keys %contact_to_number);
-  my $name = $input;
+  my $name = Complete("Enter contact name",keys %contact_to_number);
   my $number = $contact_to_number{$name};
-  last if $input =~ /quit/;
-  last unless defined $number;
+  last if $name =~ /quit/;
   return ($name,$number);
 }
 
 sub show_recent_messages {
   my ($name,$number,@sms) = @_;
-  print "\n  Recent messages: \r\n";
   my @sms2 = grep(/$number/,@sms);
-  AndroidSMS::print_sms1($name,\@sms2);
-
+  if (scalar @sms2 > 0) {
+    $scr->puts("\n  Recent messages: \r\n");
+    AndroidSMS::print_sms1($name,\@sms2);
+  }
 }
 
 sub send_sms_to_number {
   my ($number,$txt) = @_;
   if (!defined $txt || length($txt) == 0) {
-    print "\n\n  Enter text: ";
+    $scr->puts("\n  Enter text: ");
     $txt = <>;
     chomp $txt if defined $txt;
   }
-  return if !defined $txt || length($txt) == 0;
-  print "\n Send \"$txt\" to number $number? [Yn] ";
+  if (!defined $txt || length($txt) == 0) {
+    $scr->puts("\n  No text was entered, not sending.");
+    return;
+  }
+  $scr->puts("\n Send \"$txt\" to number $number? [Yn] ");
   my $answer = <>; chomp $answer if defined $answer;
   if (defined $answer && (uc($answer) eq 'Y' || $answer eq "")) {
     send_sms_using_shellms($number,$txt) unless !defined $txt || $txt =~ /^\s*$/;
