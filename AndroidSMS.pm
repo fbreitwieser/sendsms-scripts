@@ -84,6 +84,7 @@ sub print_sms1 {
 
 sub print_sms {
   my ($contacts,$sms) = @_;
+  my @recent_contacts;
   my %sms;
   my $first_line = 1;
   chomp @$sms;
@@ -100,6 +101,7 @@ sub print_sms {
     $color = 'green' if ($s[2] == 1);
     $color = 'red' if ($s[3] == 0);
     my $contact = defined $contacts->{$s[0]}? $contacts->{$s[0]} : $s[0];
+    push @recent_contacts, $contact if $s[2] == 1 && $contact ne '';
     my $str = sprintf(" %25s","$dest".$contact);
     my $indent = length($str) + 2;
     
@@ -122,6 +124,16 @@ sub print_sms {
     print ": ";
     print colored $txt, $color;
   }
+  print "\n";
+  return uniq(reverse @recent_contacts);
 }
 
+sub uniq { 
+  my %seen; 
+  grep !$seen{$_}++, @_;
+}
+
+
 1;
+
+

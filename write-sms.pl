@@ -9,9 +9,10 @@
 
 use strict;
 use warnings;
-use FindBin qw/$Bin/;
-use lib $Bin;
+use FindBin qw/$RealBin/;
+use lib $RealBin;
 use Term::Screen::Uni;
+use Term::ANSIColor;
 use Complete;
 use AndroidSMS;
 
@@ -34,13 +35,29 @@ for (my $i=0; $i<=$#sms; ++$i) {
 
 $scr->at(7,5)->puts(" Recent SMS \n");
 $scr->at(8,0);
-print_sms(\%number_to_contact,\@sms);
-print "\n\n Press Enter to write SMS ... ";
-$scr->getch();
+my @recentcontacts = print_sms(\%number_to_contact,\@sms);
 
-my $txt = join(" ",@ARGV);
+my $max_recent = min(scalar(@recentcontacts),9);
+print "\n Recent contacts: ";
+for (my $i=0;$i<$max_recent;++$i) {
+  print "(",$i+1, ") ";
+  print colored $recentcontacts[$i], "green";
+  print ", " unless $i == $max_recent-1;
+}
+print "\n";
+#$scr->clreol()->puts("Press Enter or a number of recent contact to write SMS: ");
 
 my ($name,$number);
+my $txt = join(" ",@ARGV);
+
+my $ch = $scr->getch();
+if (defined $ch && $ch > 0 && $ch <= $max_recent) {
+  $name =$recentcontacts[$ch-1];
+  $number = $contact_to_number{$name};
+  $scr->clrscr();
+  $scr = new Term::Screen::Uni;
+  $scr->at(1,1)->puts(" Sending SMS to $name [$number]. ");
+}
 
 while (1) {
 
@@ -51,16 +68,16 @@ while (1) {
   show_recent_messages($name,$number,@sms);
   $txt = send_sms_to_number($number,$txt);
 
-  print "\n Send another SMS? [Ynse] (to same contact with s, same text to someone else with e) ";
+  print "\n Send another SMS? [yNsf] (to same contact with s, forward text to someone else with f) ";
 
-  my $answer = <>; chomp $answer if defined $answer;
-  last if !defined $answer;
-    if (uc($answer) eq 'N') {
+  my $answer = $scr->getch();
+  exit if !defined $answer || uc($answer) eq 'N';
+    if (uc($answer) eq 'Y') {
       last;
     } elsif (uc($answer) eq 'S') {
       undef $txt;
       next;
-    } elsif (uc($answer) eq 'E') {
+    } elsif (uc($answer) eq 'F') {
       undef $number;
       next;
     }
@@ -110,7 +127,7 @@ sub send_sms_using_shellms {
   my $cmd = "$ADB shell am startservice --user 0 -n com.android.shellms/.sendSMS -e contact $number -e msg ".quotemeta($txt)."";
   print STDERR "Executing $cmd\n";
   system($cmd) == 0 or die "Could not send SMS";
-  system("$ADB logcat -d -s -C ShellMS_Service_sendSMS:*");
+  #system("$ADB logcat -d -s -C ShellMS_Service_sendSMS:*");
 }
 
 sub send_sms_using_shell {
@@ -125,3 +142,8 @@ sub send_sms_using_shell {
   system("$ADB shell input keyevent 3") == 0 or die "Could not press send button";
 }
 
+
+sub min {
+  my ($a,$b) = @_;
+  return($a > $b ? $b : $a);
+}
